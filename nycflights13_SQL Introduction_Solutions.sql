@@ -152,7 +152,7 @@ FROM
 and the time the query is run (keep the time component on both values)*/
 SELECT
     a.*,
-    SYSDATE - time_hour AS days_since_record
+    CURRENT_TIMESTAMP - time_hour AS days_since_record
 FROM
     nycflights.weather a;
 
@@ -161,7 +161,7 @@ FROM
 and the first of the month the record was taken*/
 SELECT
     a.*,
-    TRUNC(time_hour) - TRUNC(time_hour, 'MM') AS days_since_first_of_month
+    date_trunc('day', time_hour) - date_trunc('month', time_hour) AS days_since_first_of_month
 FROM
     nycflights.weather a;
 
@@ -187,7 +187,7 @@ The next is a date column created using TO_DATE() from the year, month, day, hou
 The final is the time of the recording, formatted as 22-00 NOV-2013-25 (that is, hour-minute month-year-day) */
 SELECT
     a.*,
-    NEXT_DAY(time_hour, 'MON') -7 AS monday_of_week,
+    DATE_TRUNC('week', time_hour) AS monday_of_week,
     TO_DATE(YEAR||'-'||MONTH||'-'||DAY||'-'||HOUR , 'YYYY-MM-DD-HH24')- time_hour AS second_column,
     TO_CHAR(time_hour, 'HH24-MI MON-YYYY-DD') as third_column
 FROM
@@ -313,7 +313,7 @@ FROM
 	nycflights.airports
 WHERE
 	tzone = 'America/Vancouver'
-MINUS
+EXCEPT
 SELECT
 	*
 FROM
@@ -332,26 +332,25 @@ ORDER BY
 FETCH FIRST 15 ROWS WITH TIES;
 
 
-/*24- Write a query to return the top 5% of planes from the PLANES table with the most number of seats.*/
+/*24- Write a query to return the 15 oldest planes from the PLANES table, ignoring the 5 oldest. Exlude any ties.*/
 SELECT
 	*
 FROM
 	nycflights.planes
 ORDER BY
 	seats desc
-FETCH FIRST 5 PERCENT ROWS ONLY;
+FETCH NEXT 15 ROWS ONLY OFFSET 5;
 
 
 /*25- Create queries using the dual table to generate:
 The date for the first of this month
-The value of the sine of 1.2 radians (You may need to google how to evaluate sine in Oracle SQL)
+The value of the sine of 1.2 radians (You may need to google how to evaluate sine in Postgres SQL)
 Anything else you want to practise
 */
 SELECT
-	TRUNC(SYSDATE, 'MM'),
+	DATE_TRUNC('month', now()),
 	SIN(1.2)
-FROM
-	dual;
+
 
 
 /*26- Take your answer from question 7 and by nesting the table filter the results to just those records with precipitation above
@@ -378,7 +377,7 @@ FROM
 	    time_hour
 	FROM
 	    nycflights.weather
-	)
+	) a
 WHERE
 	precip > 0.2 AND temp > 20;
 
@@ -419,7 +418,7 @@ FROM
 	    END AS line_flag
 	FROM
 	    nycflights.airlines a
-)
+) a
 WHERE
 	line_flag = 'Y'
 ORDER BY
@@ -427,7 +426,7 @@ ORDER BY
 
 
 /*29- Create a table called airlines_lines_temp that stores the result of your answer to question 28. Then drop the table.*/
-CREATE TABLE airlines_lines_temp NOLOGGING AS
+CREATE TABLE airlines_lines_temp AS
 SELECT
 	*
 FROM
@@ -440,13 +439,13 @@ FROM
 	    END AS line_flag
 	FROM
 	    nycflights.airlines a
-)
+) a
 WHERE
 	line_flag = 'Y'
 ORDER BY
 	carrier DESC;
 
-DROP TABLE airlines_lines_temp PURGE;
+DROP TABLE airlines_lines_temp;
 
 
 /*30- Using an inner join, combine the flights table and the weather table, bringing back all columns. Will this keep any records

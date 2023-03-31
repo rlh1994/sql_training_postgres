@@ -54,7 +54,7 @@ produce and how to fix them
 Missing values i.e. no data for a variable for a given record has a special type in SQL, it is null. null is not
 a string, or NA, but a specific type of null. You cannot have a record where all variables are null.
 
-Next let's cover a quick primer on strings. Strings, also called text, characters, varchar etc are a datatype within Oracle SQL.
+Next let's cover a quick primer on strings. Strings, also called text, characters, varchar etc are a datatype within postgres SQL.
 When using strings in your queries, you use SINGLE QUOTES ONLY. This means if you are using them as a value or to match a condition,
 you use single quotes. Double quotes are used only to refer to the name of database objects e.g. tables, columns, schemas, as where
 single quotes are using for individual values. If in doubt, you probably want single quotes 99% of the time.
@@ -330,7 +330,7 @@ END
 Where:
 	<CONDITION> is a boolean statement that evaluates to TRUE or FALSE
 	<VALUE> is the value that variable will take for a record satisfying the condition. They must all be the same
-		type, although Oracle may convert some automatically to match e.g. a number to a string
+		type, although postgres may convert some automatically to match e.g. a number to a string
 	ELSE <VALUE> is what is used when none of the conditions evaluate to TRUE.
 	The first <CONDITION> that evaluates to TRUE for a given CASE statement is the <VALUE> returned, it will not check
 		if any others are also TRUE.
@@ -482,7 +482,7 @@ date and time. There is also a time type, and timestamps can optionally have tim
 as if it were a number, where 1 is equivalent to 24 hours. Dates are not pure numbers though, they are very much a data type and have
 specific functions that work just with them. Timestamps in postgres cannot be manipulated in the same way
 
-As a reminder, Oracle has no date data type without a time component.
+As a reminder,a postgres date has no time component.
 
 A few of the key date functions are:
 	DATE_TRUNC(<datepart>, <date>)		Rounds down a date/timestamp to the specified datepart e.g. day or month
@@ -491,15 +491,17 @@ A few of the key date functions are:
 	TO_CHAR(<variable>, fmt)			Converts the variable (usually a date or a number) into the given format. This is the method to format a date in a given way NOT substr
 	EXTRACT(<value> FROM <date>)		Returns the given value e.g. year from the date and returns it as a number. To extract units less than a day you must use a timestamp
 	TO_DATE/TIMESTAMP(<variable>, <fmt>)	Converts the variable (or string) into a date/timestamp by giving it the format the variable is in
-	interval '<val>' <datepart>			Used to specify an amount of time to interact with timestamps
+	interval '<val> <datepart>'			Used to specify an amount of time to interact with timestamps
 
 I'll also introduce the concatenate operator here, ||, which just pastes two strings together
 */
 
+set datestyle='ISO';
+
 SELECT
 	time_hour,
-	time_hour + interval '1' day, -- add 1 day
-	time_hour + interval '5' minute, -- add 5 minutes
+	time_hour + interval '1 day', -- add 1 day
+	time_hour + interval '5 minute', -- add 5 minutes
 	DATE_TRUNC('day', time_hour), -- set time component to 0
 	DATE_TRUNC('month', time_hour), -- set to first of month
 	TO_CHAR(time_hour, 'HH24:MI DAY DD MONTH YYYY'), -- format date in a specific format
@@ -507,10 +509,11 @@ SELECT
 	EXTRACT(MONTH FROM time_hour), -- get the month
 	(year||'-'||month||'-'||day||' '||hour||':'||minute), -- demonstrate || operator
 	TO_DATE(year||'-'||month||'-'||day||' '||hour||':'||minute, 'YYYY-MM-DD HH24:MI'), -- convert our columns into a date
-	TO_DATE(year||'-'||month||'-'||day||' '||hour||':'||minute, 'YYYY-MM-DD HH24:MI') + 1 -- convert our columns into a date then add a day
-	TO_DATE(year||'-'||month||'-'||day||' '||hour||':'||minute, 'YYYY-MM-DD HH24:MI') + 5/24/60 -- convert our columns into a date then add 5 minutes
+	TO_DATE(year||'-'||month||'-'||day||' '||hour||':'||minute, 'YYYY-MM-DD HH24:MI') + interval '1 hour', -- convert our columns into a date then add a day
+	TO_DATE(year||'-'||month||'-'||day||' '||hour||':'||minute, 'YYYY-MM-DD HH24:MI') + interval '5 minute' -- convert our columns into a date then add 5 minutes
 FROM
 	nycflights.flights;
+
 
 
 /*
@@ -523,7 +526,7 @@ Note that there is no way to add a time component using this method.
 SELECT
 	tailnum,
 	DATE '2019-01-20' AS fixed_date,
-	timestamp '2019-01-20 10:00:05' as fixed_timestamp
+	TIMESTAMP '2019-01-20 10:00:05' as fixed_timestamp
 FROM
 	nycflights.flights;
 
@@ -535,7 +538,7 @@ I cast it to a varchar (using ::) without specifying the format... */
 -- Set a specific date format for your local session and sub-string our dates
 show datestyle;
 
-set datestyle='SQL, MDY';
+set datestyle='SQL, DMY';
 SELECT
 	time_hour,
 	substr(time_hour::varchar, 9, 2)
@@ -544,7 +547,7 @@ FROM
 
 
 -- Change the format and check the results
-set datestyle='ISO, MDY';
+set datestyle='ISO, DMY';
 SELECT
 	time_hour,
 	substr(time_hour::varchar, 9, 2)
@@ -953,11 +956,10 @@ WHERE
 ORDER BY
 	<COLUMNS>
 [OFFSET <NUMBER> ROWS]
-FETCH NEXT <NUMBER> [PERCENT] ROWS ONLY/WITH TIES;
+FETCH NEXT/FIRST <NUMBER> ROWS ONLY/WITH TIES OFFSET <NUMBER>;
 
 Where <NUMBER> is the number of rows you first optionally offset by (maybe you only want the 6th-10th rows, rather than 1st-5th),
 and then the second <NUMBER> is how many rows, or the percentage of rows you wish to return.
-PERCENT is an optional keyword, to return a percentage of all records as opposed to an absolute number of records
 ONLY vs WITH TIES is what it sounds like, if you return 5 records and the 5th and 6th rows ties on what is in your ORDER BY, it will actually return 6 rows.
 
 Note many warehouses support LIMIT with an offset, this is a simpler version and fetch offers more flexiblity
@@ -1056,7 +1058,7 @@ then we'll look at ways to use the output of your query within the same or anoth
 one of the key features of relations databases - joins.
 
 The first thing we introduce is that you can technically make a table on the fly. This is what's known as the dummy table.
-The purpose of it is that, because pretty much everything in Oracle SQL expects a table/variable as an input,
+The purpose of it is that, because pretty much everything in SQL expects a table/variable as an input,
 you can use this to be that table, or just test things out quickly.
 */
 
@@ -1069,8 +1071,8 @@ Often you want to count sunday events as part of the week that ends on that date
 analysis so work out what's right for you
 */
 SELECT
-	date_trunc('day', current_timestamp)::date - 5 + 1/24 + 14/24/60, --Some random date manipulation as a test
-	date_trunc('week', current_timestamp + interval '1' day)::date - 1 AS week_end_date -- should return Monday
+	date_trunc('day', current_timestamp)::date - interval '5 day' + interval '1 hour' + interval '14 minute', --Some random date manipulation as a test
+	date_trunc('week', current_timestamp)::date AS week_end_date -- should return Monday
 ;
 
 
@@ -1536,13 +1538,13 @@ FROM
 
 
 /* Note that again we can't use these columns in a WHERE clause as they are created within the SELECT clause.
-There are more window functions available in Oracle SQL that will not be covered here, but could be useful if needed including
+There are more window functions available in postgres SQL that will not be covered here, but could be useful if needed including
 ones to tell you what percentile of a groups value that record is in, the first value, the last value etc. */
 
 /*
 That concludes the section on aggregation; you learnt how to summarise data by groups in a PivotTable type output,
 and how to add aggregated information as a new column while keeping all original records. You now know the vast majority
-of what you need to know in Oracle SQL to write most queries you will ever write. There are a lot more irregularly used and specific
+of what you need to know in postgres SQL to write most queries you will ever write. There are a lot more irregularly used and specific
 quirks, functions, keywords etc that you may encounter as you solve more and more problems using SQL, but for most work this is more
 than enough.
 
