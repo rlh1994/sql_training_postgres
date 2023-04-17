@@ -19,7 +19,7 @@ that is the visibility in kms */
 that is the temperature in Celsius*/
 
 
-/*7- The precip variable in the WEATHER table is in inches. Write a query that replaces the precip 
+/*7- The precip variable in the WEATHER table is in inches. Write a query that replaces the precip
 variable with the precipitation in cms, the visib variable with visibility in kms, and the temp variable
 with the temperature on Celsius. Do not return the original variables.*/
 
@@ -30,7 +30,7 @@ precipitation, 'Y' if there is.*/
 
 /*9- Write a query to add a column to the WEATHER table that defines the is based on the following
 visibility ranges:
-Fog 	- <= 0.625 miles 
+Fog 	- <= 0.625 miles
 Mist 	- <= 1.2 miles
 Haze 	- <= 3.1 miles
 Clear 	- > 3.1 miles */
@@ -58,7 +58,7 @@ is before the 1st July and the wind is faster than 12mph, 'First half - not wind
 or equal to 12mph, and then 'Second half - ...' for after the 1st July.*/
 
 
-/*15- Write a query that adds multiple variables to the WEATHER table. 
+/*15- Write a query that adds multiple variables to the WEATHER table.
 The first is the Monday of that week, inclusive (so Sunday 23:59 goes to the previous Monday)
 The next is a date column created using TO_DATE() from the year, month, day, hour columns, and subtract time_hour from this
 The final is the time of the recording, formatted as 22-00 NOV-2013-25 (that is, hour-minute month-year-day) */
@@ -67,15 +67,15 @@ The final is the time of the recording, formatted as 22-00 NOV-2013-25 (that is,
 /*16- Write a query to return records from the PLANES table where the year of production is before 2002*/
 
 
-/*17- Write a query to return records from the AIRPORTS table where the longitude is greater than -100 
+/*17- Write a query to return records from the AIRPORTS table where the longitude is greater than -100
 with a latitude that is less than 50 or more than 60*/
 
 
-/*18- Write a query to return records from the WEATHER table where the data was recorded between the 20th June and 
+/*18- Write a query to return records from the WEATHER table where the data was recorded between the 20th June and
 the 15th August inclusive using the time_hour column. */
 
 
-/*19- Write a query to return records from the AIRPORTS table where the time zone is Denver, Chicago, or Los Angeles. 
+/*19- Write a query to return records from the AIRPORTS table where the time zone is Denver, Chicago, or Los Angeles.
 Try to do this first using like statements, then again using IN once you know their full names.*/
 
 
@@ -83,10 +83,10 @@ Try to do this first using like statements, then again using IN once you know th
 for any ties.*/
 
 
-/*21- Using the DISTINCT keyword use the planes table to get a unique list of manufacturers */ 
+/*21- Using the DISTINCT keyword use the planes table to get a unique list of manufacturers */
 
 
-/*22- Using the airports table write 2 queries, 1 that has all airports in the America/Vancouver timezone, and 
+/*22- Using the airports table write 2 queries, 1 that has all airports in the America/Vancouver timezone, and
 1 that contains those with faa code 'WHD', '17G', and 'AVL'. Then combine them  so you get:
 a) Airports that are in both queries
 b) Airports that are in either query (without duplicating them)
@@ -96,17 +96,17 @@ c) Airports in the second query that are not in the first
 /*23- Write a query to return the 15 oldest planes from the PLANES table. Include any extra ties if there are.*/
 
 
-/*24- Write a query to return the top 5% of planes from the PLANES table with the most number of seats.*/
+/*24- Write a query to return the 15 oldest planes from the PLANES table, ignoring the 5 oldest. Exlude any ties.*/
 
 
 /*25- Create queries using the dual table to generate:
 The date for the first of this month
 The value of the sine of 1.2 radians (You may need to google how to evaluate sine in Oracle SQL)
-Anything else you want to practise 
+Anything else you want to practise
 */
 
 
-/*26- Take your answer from question 7 and by nesting the table filter the results to just those records with precipitation above 
+/*26- Take your answer from question 7 and by nesting the table filter the results to just those records with precipitation above
 0.2cm of rain and temperature above 20 degrees Celsius.*/
 
 
@@ -128,7 +128,7 @@ for which there isn't a matching weather record?*/
 would happen if a match couldn't be found for the airport code?*/
 
 
-/*32- Using 3 joins, combine the flights, airports, and planes table to get a column for the full origin name, a column for the 
+/*32- Using 3 joins, combine the flights, airports, and planes table to get a column for the full origin name, a column for the
 full destination name, and a column for the type of airplane. Justify what type of joins you use. */
 
 
