@@ -128,8 +128,7 @@ SELECT
 	origin,
 	dest
 FROM
-	nycflights.flights
-	limit 10;
+	nycflights.flights;
 /*
 You may ask is it possible to select all columns except for a few,
 while this is possible in some other warehouses postgres does not currently support this.
@@ -149,8 +148,7 @@ SELECT
 	dest,
 	123
 FROM
-	nycflights.flights
-	limit 10;
+	nycflights.flights;
 
 
 /* The new column name isn't very useful, so let's *alias* it as something using the AS keyword */
@@ -167,8 +165,7 @@ SELECT
 	dest,
 	123 AS new_column
 FROM
-	nycflights.flights
-	limit 10;
+	nycflights.flights;
 
 
 /* You don't actually have to use the AS keyword, it can be implicit but is good practise to use it. We can also
@@ -244,10 +241,9 @@ SELECT
 	tailnum,
 	origin,
 	dest,
-	123 as ඞ
+	123 as "123"
 FROM
-	nycflights.flights
-	limit 10;
+	nycflights.flights;
 
 
 /* You can now attempt questions 1-4 */

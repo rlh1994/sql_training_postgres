@@ -16,6 +16,7 @@ To add a connection for pgAdmin, right-click on `Servers` once logged in, then `
 - Maintenance Database: `sql_training`
 - Username: `admin`
 - Password: `password`
+- Save password
 
 Leave the remaining unchanged. To start writing SQL Queries, expand the left side bar until you see the `sql_training` warehouse then right-click and select `Query Tool`.
 
